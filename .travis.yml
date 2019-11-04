@@ -8,10 +8,12 @@ services:
 
 script:
   # Build docker image
-  - docker build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG .
-post_install:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+  - docker build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG .
   - docker push $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
+ #post_install:
+ # - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+#  - docker push $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
 
 
 before_deploy:
@@ -21,6 +23,6 @@ before_deploy:
    - sudo mv terraform /usr/local/bin/
 deploy:
    - provider: script
-     script: deploy.sh
+     script: terraform taint $TERRAFORM_INSTANCE && terraform apply -auto-approve
      on:
       branch: master
