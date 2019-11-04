@@ -1,0 +1,25 @@
+# travis.yml
+sudo: required
+
+language: php
+
+services:
+   - docker
+
+script:
+  # Build docker image
+  - docker build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
+post_install:
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+  - docker push $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
+
+
+before_deploy:
+   # Install terraform
+   - wget https://releases.hashicorp.com/terraform/0.12.7/terraform_0.12.7_linux_amd64.zip
+   - unzip terraform_0.12.7_linux_amd64.zip
+   - sudo mv terraform /usr/local/bin/
+deploy:
+   # Deploy using terraform
+   - terraform taint $TERRAFORM_INSTANCE
+   - terraform apply -auto-approve
