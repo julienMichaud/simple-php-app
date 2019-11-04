@@ -20,6 +20,7 @@ before_deploy:
    - unzip terraform_0.12.7_linux_amd64.zip
    - sudo mv terraform /usr/local/bin/
 deploy:
-   # Deploy using terraform
-   - terraform taint $TERRAFORM_INSTANCE
-   - terraform apply -auto-approve
+   - provider: script
+     script: deploy.sh
+     on:
+      branch: master
